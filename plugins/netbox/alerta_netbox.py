@@ -11,8 +11,8 @@ from requests.adapters import HTTPAdapter
 
 LOG = logging.getLogger("alerta.plugins.netbox")
 
-GQL_QUERY = """query FindDevice($q: [String]) {{
-    device_list(filters: {name__ie: $q}) {{
+GQL_QUERY = """query FindDevice($q: StrFilterLookup) {{
+    device_list(filters: {{name: $q}}) {{
         id
         {fields}
     }}
@@ -85,7 +85,7 @@ class NetboxEnhance(PluginBase):
                     },
                     json={
                         "query": GQL_QUERY.format(fields=NETBOX_FIELDS),
-                        "variables": {"q": [alert.resource]},
+                        "variables": {"q": {"i_exact": alert.resource}},
                     },
                 )
             except Exception as e:
